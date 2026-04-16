@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Музей - Адаптивное видео</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: black;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        /* Контейнер плеера */
+        .player-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: black;
+        }
+        
+        /* Стили для iframe */
+        .player-container iframe {
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        /* Вертикальная ориентация (портрет) */
+        .player-container.portrait iframe {
+            width: auto;
+            height: 100vh;
+            max-width: 100vw;
+            aspect-ratio: 9 / 16;
+        }
+        
+        /* Горизонтальная ориентация (ландшафт) */
+        .player-container.landscape iframe {
+            width: 100vw;
+            height: auto;
+            aspect-ratio: 16 / 9;
+        }
+        
+        .info {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: white;
+            background: rgba(0,0,0,0.7);
+            padding: 12px;
+            font-size: 14px;
+            z-index: 10;
+        }
+        
+        @media (max-width: 600px) {
+            .info { font-size: 12px; padding: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="player-container" id="playerContainer">
+        <!-- Сюда будет вставлен iframe -->
+    </div>
+    <div class="info">
+        
+    <script>
+        // ВСТАВЬТЕ ВАШУ ССЫЛКУ НА ВИДЕО ИЗ KINESCOPE
+        const VIDEO_URL = "https://kinescope.io/p3raSCj8aDzDAQcnP2MFZS/plkZZ78u";
+        
+        // Параметры плеера
+        const PLAYER_PARAMS = "?autoplay=1&muted=1&playsinline=1&controls=1";
+        
+        const container = document.getElementById('playerContainer');
+        let currentOrientation = '';
+        
+        function getOrientation() {
+            return window.innerHeight > window.innerWidth ? 'portrait' : 'landscape';
+        }
+        
+        function updatePlayerSize() {
+            const orientation = getOrientation();
+            
+            const oldIframe = container.querySelector('iframe');
+            if (oldIframe) {
+                oldIframe.remove();
+            }
+            
+            const iframe = document.createElement('iframe');
+            iframe.src = VIDEO_URL + PLAYER_PARAMS;
+            iframe.allow = "autoplay; fullscreen; picture-in-picture; encrypted-media; gyroscope; accelerometer; clipboard-write; screen-wake-lock;";
+            iframe.setAttribute('frameborder', '0');
+            
+            container.appendChild(iframe);
+            
+            container.classList.remove('portrait', 'landscape');
+            container.classList.add(orientation);
+        }
+        
+        function updateOrientationClass() {
+            const orientation = getOrientation();
+            if (currentOrientation !== orientation) {
+                currentOrientation = orientation;
+                container.classList.remove('portrait', 'landscape');
+                container.classList.add(orientation);
+            }
+        }
+        
+        updatePlayerSize();
+        
+        window.addEventListener('resize', () => {
+            updateOrientationClass();
+        });
+        
+        window.addEventListener('orientationchange', () => {
+            setTimeout(updateOrientationClass, 50);
+        });
+    </script>
+</body>
+</html>
